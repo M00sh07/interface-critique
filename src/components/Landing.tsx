@@ -25,16 +25,25 @@ export function Landing({ onAnalyze }: LandingProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const handleFileSelect = async (file: File) => {
-    if (!file.type.startsWith('image/')) return;
-    
-    setIsLoading(true);
-    const reader = new FileReader();
-    reader.onload = (e) => {
-      const dataUrl = e.target?.result as string;
-      onAnalyze(dataUrl, 'upload');
-    };
-    reader.readAsDataURL(file);
+  if (!file.type.startsWith('image/')) return;
+
+  // 🔴 GA EVENT — screenshot upload confirmed
+  if (window.gtag) {
+    window.gtag("event", "upload_screenshot", {
+      event_category: "ai_analysis",
+      event_label: "landing_upload",
+    });
+  }
+
+  setIsLoading(true);
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    const dataUrl = e.target?.result as string;
+    onAnalyze(dataUrl, 'upload');
   };
+  reader.readAsDataURL(file);
+};
+
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
